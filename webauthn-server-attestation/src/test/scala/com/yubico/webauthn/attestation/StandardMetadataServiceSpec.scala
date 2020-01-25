@@ -24,14 +24,17 @@
 
 package com.yubico.webauthn.attestation
 
+import java.security.cert.X509Certificate
+import java.util.Base64
 import java.util.Collections
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory
-import com.yubico.internal.util.WebAuthnCodecs
 import com.yubico.internal.util.scala.JavaConverters._
+import com.yubico.internal.util.JacksonCodecs
 import com.yubico.webauthn.TestAuthenticator
 import com.yubico.webauthn.attestation.resolver.SimpleAttestationResolver
 import com.yubico.webauthn.attestation.resolver.SimpleTrustResolver
+import com.yubico.webauthn.WebAuthnCodecs
 import org.bouncycastle.asn1.DEROctetString
 import org.bouncycastle.asn1.DERBitString
 import org.bouncycastle.asn1.x500.X500Name
@@ -54,11 +57,18 @@ class StandardMetadataServiceSpec extends FunSpec with Matchers {
   private val ooidB = "1.3.6.1.4.1.41482.1.2"
 
   def metadataService(metadataJson: String): StandardMetadataService = {
-    val metadata = Collections.singleton(WebAuthnCodecs.json().readValue(metadataJson, classOf[MetadataObject]))
+    val metadata = Collections.singleton(JacksonCodecs.json().readValue(metadataJson, classOf[MetadataObject]))
     new StandardMetadataService(
       new SimpleAttestationResolver(metadata, SimpleTrustResolver.fromMetadata(metadata))
     )
   }
+
+  def toPem(cert: X509Certificate): String = (
+    "-----BEGIN CERTIFICATE-----\n"
+      + Base64.getMimeEncoder(64, System.getProperty("line.separator").getBytes("UTF-8"))
+      .encodeToString(cert.getEncoded)
+      + "\n-----END CERTIFICATE-----\n"
+    )
 
   describe("StandardMetadataService") {
 
@@ -101,7 +111,7 @@ class StandardMetadataServiceSpec extends FunSpec with Matchers {
         s"""{
           "identifier": "44c87ead-4455-423e-88eb-9248e0ebe847",
           "version": 1,
-          "trustedCertificates": ["${TestAuthenticator.toPem(caCert).linesIterator.mkString(raw"\n")}"],
+          "trustedCertificates": ["${toPem(caCert).linesIterator.mkString(raw"\n")}"],
           "vendorInfo": {},
           "devices": [
             {
@@ -159,7 +169,7 @@ class StandardMetadataServiceSpec extends FunSpec with Matchers {
           s"""{
           "identifier": "44c87ead-4455-423e-88eb-9248e0ebe847",
           "version": 1,
-          "trustedCertificates": ["${TestAuthenticator.toPem(caCert).linesIterator.mkString(raw"\n")}"],
+          "trustedCertificates": ["${toPem(caCert).linesIterator.mkString(raw"\n")}"],
           "vendorInfo": {},
           "devices": []
         }"""
@@ -197,7 +207,7 @@ class StandardMetadataServiceSpec extends FunSpec with Matchers {
           s"""{
           "identifier": "44c87ead-4455-423e-88eb-9248e0ebe847",
           "version": 1,
-          "trustedCertificates": ["${TestAuthenticator.toPem(cacaca._1).linesIterator.mkString(raw"\n")}"],
+          "trustedCertificates": ["${toPem(cacaca._1).linesIterator.mkString(raw"\n")}"],
           "vendorInfo": {},
           "devices": [
             {
@@ -227,7 +237,7 @@ class StandardMetadataServiceSpec extends FunSpec with Matchers {
           s"""{
           "identifier": "44c87ead-4455-423e-88eb-9248e0ebe847",
           "version": 1,
-          "trustedCertificates": ["${TestAuthenticator.toPem(caCert).linesIterator.mkString(raw"\n")}"],
+          "trustedCertificates": ["${toPem(caCert).linesIterator.mkString(raw"\n")}"],
           "vendorInfo": {},
           "devices": [
             {

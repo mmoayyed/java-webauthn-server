@@ -1,22 +1,32 @@
-description = 'Yubico internal utilities'
+plugins {
+  id 'java-library'
+  id 'scala'
+}
 
-apply plugin: 'scala'
+description = 'Yubico internal utilities'
 
 project.ext.publishMe = true
 
 dependencies {
 
-  compile(
-    'com.fasterxml.jackson.core:jackson-databind:2.9.9',
-    'com.google.guava:guava:19.0',
-    'org.bouncycastle:bcpkix-jdk15on:1.54',
+  api(
+    addVersion('com.fasterxml.jackson.core:jackson-databind'),
   )
 
-  testCompile(
+  implementation(
+    addVersion('com.fasterxml.jackson.dataformat:jackson-dataformat-cbor'),
+    addVersion('com.fasterxml.jackson.datatype:jackson-datatype-jdk8'),
+    addVersion('com.upokecenter:cbor'),
+    addVersion('org.bouncycastle:bcprov-jdk15on'),
+    addVersion('org.slf4j:slf4j-api'),
+  )
+
+  testImplementation(
     project(':yubico-util-scala'),
-    'org.scala-lang:scala-library:2.12.8',
-    'org.scalacheck:scalacheck_2.12:1.14.0',
-    'org.scalatest:scalatest_2.12:3.0.4',
+    addVersion('junit:junit'),
+    addVersion('org.scala-lang:scala-library'),
+    addVersion('org.scalacheck:scalacheck_2.12'),
+    addVersion('org.scalatest:scalatest_2.12'),
   )
 }
 

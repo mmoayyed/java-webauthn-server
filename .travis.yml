@@ -5,10 +5,8 @@ branches:
     - /^tmp-?.*/
 
 jdk:
-  - oraclejdk8
   - oraclejdk11
   - openjdk8
-  - openjdk10
   - openjdk11
 
 script:
@@ -21,5 +19,8 @@ stages:
 jobs:
   include:
     - stage: mutation-test
-      jdk: oraclejdk8
+      jdk: oraclejdk11
       script: ./gradlew pitest coveralls
+
+      # Workaround to TLS issues in JDK 11, see https://github.com/kt3k/coveralls-gradle-plugin/issues/85
+      after_success: curl -F 'json_file=@build/coveralls/report.json' 'https://coveralls.io/api/v1/jobs'

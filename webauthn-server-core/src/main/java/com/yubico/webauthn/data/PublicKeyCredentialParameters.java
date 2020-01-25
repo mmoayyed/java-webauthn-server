@@ -64,9 +64,19 @@ public class PublicKeyCredentialParameters {
     }
 
     /**
+     * Algorithm {@link COSEAlgorithmIdentifier#EdDSA} and type {@link PublicKeyCredentialType#PUBLIC_KEY}.
+     */
+    public static final PublicKeyCredentialParameters EdDSA = builder().alg(COSEAlgorithmIdentifier.EdDSA).build();
+
+    /**
      * Algorithm {@link COSEAlgorithmIdentifier#ES256} and type {@link PublicKeyCredentialType#PUBLIC_KEY}.
      */
     public static final PublicKeyCredentialParameters ES256 = builder().alg(COSEAlgorithmIdentifier.ES256).build();
+
+    /**
+     * Algorithm {@link COSEAlgorithmIdentifier#RS1} and type {@link PublicKeyCredentialType#PUBLIC_KEY}.
+     */
+    public static final PublicKeyCredentialParameters RS1 = builder().alg(COSEAlgorithmIdentifier.RS1).build();
 
     /**
      * Algorithm {@link COSEAlgorithmIdentifier#RS256} and type {@link PublicKeyCredentialType#PUBLIC_KEY}.

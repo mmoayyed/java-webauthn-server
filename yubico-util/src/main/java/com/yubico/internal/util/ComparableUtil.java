@@ -22,12 +22,35 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package demo.webauthn;
+package com.yubico.internal.util;
 
-import com.yubico.util.Either;
-import demo.webauthn.WebAuthnServer.SuccessfulAuthenticationResult;
-import java.util.List;
-import java.util.function.Function;
+import java.util.Iterator;
+import java.util.SortedSet;
 
-public interface AuthenticatedAction<T> extends Function<SuccessfulAuthenticationResult, Either<List<String>, T>> {
+public class ComparableUtil {
+
+    public static <T extends Comparable<T>> int compareComparableSets(SortedSet<T> a, SortedSet<T> b) {
+        if (a.size() == b.size()) {
+            final Iterator<T> as = a.iterator();
+            final Iterator<T> bs = b.iterator();
+
+            while (as.hasNext() && bs.hasNext()) {
+                final int comp = as.next().compareTo(bs.next());
+                if (comp != 0) {
+                    return comp;
+                }
+            }
+
+            if (as.hasNext()) {
+                return 1;
+            } else if (bs.hasNext()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        } else {
+            return a.size() - b.size();
+        }
+    }
+
 }

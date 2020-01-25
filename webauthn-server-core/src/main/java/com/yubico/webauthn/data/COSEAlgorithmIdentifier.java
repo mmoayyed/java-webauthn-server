@@ -41,8 +41,10 @@ import lombok.Getter;
  */
 @JsonSerialize(using = JsonLongSerializer.class)
 public enum COSEAlgorithmIdentifier implements JsonLongSerializable {
+    EdDSA(-8),
     ES256(-7),
-    RS256(-257);
+    RS256(-257),
+    RS1(-65535);
 
     @Getter
     private final long id;

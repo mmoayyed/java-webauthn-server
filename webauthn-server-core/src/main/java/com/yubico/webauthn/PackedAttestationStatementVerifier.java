@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.upokecenter.cbor.CBORObject;
 import com.yubico.internal.util.CollectionUtil;
 import com.yubico.internal.util.ExceptionUtil;
-import com.yubico.internal.util.WebAuthnCodecs;
 import com.yubico.webauthn.data.AttestationObject;
 import com.yubico.webauthn.data.AttestationType;
 import com.yubico.webauthn.data.ByteArray;
@@ -135,7 +134,7 @@ final class PackedAttestationStatementVerifier implements AttestationStatementVe
             throw ExceptionUtil.wrapAndLog(log, ".binaryValue() of \"sig\" failed", e);
         }
 
-        return crypto.verifySignature(pubkey, signedData, signature);
+        return crypto.verifySignature(pubkey, signedData, signature, keyAlg);
     }
 
     private boolean verifyX5cSignature(AttestationObject attestationObject, ByteArray clientDataHash) {
@@ -151,7 +150,6 @@ final class PackedAttestationStatementVerifier implements AttestationStatementVe
         }
         return attestationCert.map(attestationCertificate -> {
             JsonNode signatureNode = attestationObject.getAttestationStatement().get("sig");
-
             if (signatureNode == null) {
                 throw new IllegalArgumentException("Packed attestation statement must have field \"sig\".");
             }
@@ -164,9 +162,18 @@ final class PackedAttestationStatementVerifier implements AttestationStatementVe
                     throw ExceptionUtil.wrapAndLog(log, "signatureNode.isBinary() was true but signatureNode.binaryValue() failed", e);
                 }
 
+                JsonNode algNode = attestationObject.getAttestationStatement().get("alg");
+                if (algNode == null) {
+                    throw new IllegalArgumentException("Packed attestation statement must have field \"alg\".");
+                }
+                ExceptionUtil.assure(algNode.isIntegralNumber(), "Field \"alg\" in packed attestation statement must be a COSEAlgorithmIdentifier.");
+                final Long sigAlgId = algNode.asLong();
+                final COSEAlgorithmIdentifier sigAlg = COSEAlgorithmIdentifier.fromId(sigAlgId)
+                    .orElseThrow(() -> new IllegalArgumentException("Unsupported COSE algorithm identifier: " + sigAlgId));
+
                 ByteArray signedData = attestationObject.getAuthenticatorData().getBytes().concat(clientDataHash);
 
-                final String signatureAlgorithmName = "SHA256with" + WebAuthnCodecs.getSignatureAlgorithmName(attestationCertificate.getPublicKey());
+                final String signatureAlgorithmName = WebAuthnCodecs.getJavaAlgorithmName(sigAlg);
                 Signature signatureVerifier;
                 try {
                     signatureVerifier = Signature.getInstance(signatureAlgorithmName, crypto.getProvider());
