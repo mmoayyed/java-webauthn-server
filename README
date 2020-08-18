@@ -4,7 +4,6 @@ java-webauthn-server
 :toc-placement: macro
 :toc-title:
 
-image:https://travis-ci.org/Yubico/java-webauthn-server.svg?branch=master["Build Status", link="https://travis-ci.org/Yubico/java-webauthn-server"]
 image:https://github.com/Yubico/java-webauthn-server/workflows/build/badge.svg["Build Status", link="https://github.com/Yubico/java-webauthn-server/actions"]
 image:https://coveralls.io/repos/github/Yubico/java-webauthn-server/badge.svg["Coverage Status", link="https://coveralls.io/github/Yubico/java-webauthn-server"]
 
@@ -26,7 +25,7 @@ Maven:
 <dependency>
   <groupId>com.yubico</groupId>
   <artifactId>webauthn-server-core</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.1</version>
   <scope>compile</scope>
 </dependency>
 ----------
@@ -34,7 +33,7 @@ Maven:
 Gradle:
 
 ----------
-compile 'com.yubico:webauthn-server-core:1.5.0'
+compile 'com.yubico:webauthn-server-core:1.6.1'
 ----------
 
 
@@ -58,20 +57,6 @@ federation, and it's not an authentication framework; it only deals with
 executing the WebAuthn authentication mechanism. Sessions, account management
 and other higher level concepts can make use of this authentication mechanism,
 but the authentication mechanism alone does not make a security system.
-
-
-== Known issues
-
-- In the link:webauthn-server-demo[example app], authentication does not work in
-  Chrome as of version 70. This is due to a
-  link:https://bugs.chromium.org/p/chromium/issues/detail?id=847878[bug in
-  Chrome] which will not be worked around here. To work around this in
-  application code, you can omit the
-  link:https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/latest/com/yubico/webauthn/data/AuthenticatorAssertionResponse.AuthenticatorAssertionResponseBuilder.html#userHandle-java.util.Optional[`userHandle`]
-  when constructing an
-  link:https://developers.yubico.com/java-webauthn-server/JavaDoc/webauthn-server-core/latest/com/yubico/webauthn/data/AuthenticatorAssertionResponse.html[`AuthenticatorAssertionResponse`]
-  value if the `userHandle` is empty. See
-  https://github.com/Yubico/java-webauthn-server/issues/12 .
 
 
 == Documentation

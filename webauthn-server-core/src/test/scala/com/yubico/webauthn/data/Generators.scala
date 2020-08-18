@@ -47,7 +47,7 @@ import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 object Generators {
@@ -103,12 +103,12 @@ object Generators {
     alg <- arbitrary[COSEAlgorithmIdentifier]
     sig <- arbitrary[ByteArray]
     x5c <- arbitrary[List[ByteArray]]
-    attStmt = jsonFactory.objectNode().setAll(Map(
+    attStmt = jsonFactory.objectNode().setAll[ObjectNode](Map(
       "alg" -> jsonFactory.numberNode(alg.getId),
       "sig" -> jsonFactory.binaryNode(sig.getBytes),
       "x5c" -> jsonFactory.arrayNode().addAll(x5c.map(cert => jsonFactory.binaryNode(cert.getBytes)).asJava)
     ).asJava)
-    attObj = jsonFactory.objectNode().setAll(Map(
+    attObj = jsonFactory.objectNode().setAll[ObjectNode](Map(
       "authData" -> jsonFactory.binaryNode(authData.getBytes),
       "fmt" -> jsonFactory.textNode("packed"),
       "attStmt" -> attStmt
@@ -120,11 +120,11 @@ object Generators {
     alg <- arbitrary[COSEAlgorithmIdentifier]
     sig <- arbitrary[ByteArray]
     x5c <- arbitrary[List[ByteArray]]
-    attStmt = jsonFactory.objectNode().setAll(Map(
+    attStmt = jsonFactory.objectNode().setAll[ObjectNode](Map(
       "sig" -> jsonFactory.binaryNode(sig.getBytes),
       "x5c" -> jsonFactory.arrayNode().addAll(x5c.map(cert => jsonFactory.binaryNode(cert.getBytes)).asJava)
     ).asJava)
-    attObj = jsonFactory.objectNode().setAll(Map(
+    attObj = jsonFactory.objectNode().setAll[ObjectNode](Map(
       "authData" -> jsonFactory.binaryNode(authData.getBytes),
       "fmt" -> jsonFactory.textNode("fido-u2f"),
       "attStmt" -> attStmt
@@ -185,7 +185,7 @@ object Generators {
 
   implicit val arbitraryAuthenticatorTransport: Arbitrary[AuthenticatorTransport] = Arbitrary(
     Gen.oneOf(
-      Gen.oneOf(AuthenticatorTransport.values()),
+      Gen.oneOf(AuthenticatorTransport.values().toIndexedSeq),
       arbitrary[String] map AuthenticatorTransport.of
     ))
 
@@ -223,22 +223,22 @@ object Generators {
         .set("type", jsonFactory.textNode(tpe)).asInstanceOf[ObjectNode]
 
       tokenBinding.asScala foreach { tb =>
-        json.set("tokenBinding", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(tb)))
+        json.set[ObjectNode]("tokenBinding", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(tb)))
       }
 
       authenticatorExtensions.asScala foreach { ae =>
-        json.set("authenticatorExtensions", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(ae)))
+        json.set[ObjectNode]("authenticatorExtensions", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(ae)))
       }
 
       clientExtensions.asScala foreach { ce =>
-        json.set("clientExtensions", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(ce)))
+        json.set[ObjectNode]("clientExtensions", JacksonCodecs.json().readTree(JacksonCodecs.json().writeValueAsString(ce)))
       }
 
       json
     }
   } yield new ByteArray(JacksonCodecs.json().writeValueAsBytes(json))
 
-  implicit val arbitraryCOSEAlgorithmIdentifier: Arbitrary[COSEAlgorithmIdentifier] = Arbitrary(Gen.oneOf(COSEAlgorithmIdentifier.values()))
+  implicit val arbitraryCOSEAlgorithmIdentifier: Arbitrary[COSEAlgorithmIdentifier] = Arbitrary(Gen.oneOf(COSEAlgorithmIdentifier.values().toIndexedSeq))
 
   implicit val arbitraryPublicKeyCredentialWithAssertion: Arbitrary[PublicKeyCredential[AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs]] = Arbitrary(for {
     id <- arbitrary[ByteArray]

@@ -86,7 +86,7 @@ import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 
@@ -160,7 +160,7 @@ object TestAuthenticator {
       clientDataJson: String,
     ): ByteArray = {
       val f = JsonNodeFactory.instance
-      val attObj = f.objectNode().setAll(Map(
+      val attObj = f.objectNode().setAll[ObjectNode](Map(
         "authData" -> f.binaryNode(authDataBytes.getBytes),
         "fmt" -> f.textNode(format),
         "attStmt" -> makeAttestationStatement(authDataBytes, clientDataJson),

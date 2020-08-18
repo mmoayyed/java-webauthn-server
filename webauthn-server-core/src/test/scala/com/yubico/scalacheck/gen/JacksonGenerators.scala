@@ -32,7 +32,7 @@ import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Arbitrary.arbitrary
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 
 object JacksonGenerators {
@@ -50,7 +50,7 @@ object JacksonGenerators {
       } yield {
         val o = jsonFactory.objectNode()
         for { (name, value) <- names.zip(values) } {
-          o.set(name, value)
+          o.set[ObjectNode](name, value)
         }
         o
       }
