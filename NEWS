@@ -1,3 +1,26 @@
+== Version 1.7.0 ==
+
+webauthn-server-attestation:
+
+* Updated name of AAGUID `2fc0579f811347eab116bb5a8db9202a` to "YubiKey 5/5C NFC"
+* Changed name of "YubiKey 5 Series security key" to "YubiKey 5 Series"
+
+webauthn-server-core:
+
+Changes:
+
+* Fixed crash on unknown attestation statement formats
+ ** Unless `RelyingParty.allowUntrustedAttestation` is set to `false`, unknown
+    attestation statements will now pass as untrusted attestations, instead of
+    throwing an IllegalArgumentException.
+* Disambiguated Jackson deserialization of class `AuthenticatorTransport`
+
+New features:
+
+* Class `RegisteredCredential` can now be serialized to and deserialized from
+  JSON.
+
+
 == Version 1.6.4 ==
 
 * Changed dependency declarations to version ranges
